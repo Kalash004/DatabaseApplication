@@ -3,7 +3,5 @@ class SimpleBaseTable:
 
     def __init__(self, **kwargs):
 
-
-
-
     def send_table_to_control(self):
+        pass
