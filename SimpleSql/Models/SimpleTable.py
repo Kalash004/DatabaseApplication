@@ -5,3 +5,4 @@ class SimpleBaseTable:
 
     def send_table_to_control(self):
         pass
+        # Send table object to the controller singleton

@@ -1,6 +1,6 @@
 import unittest
 
-from SimpleSql.Connector.SimpleSQLConnector import SimpleSQLConnector
+from SimpleSql.Core.Connector.SimpleSQLConnector import SimpleSQLConnector
 from SimpleSql.Models.SimpleSQLDbConfig import SimpleSQLDbConfig
 
 
