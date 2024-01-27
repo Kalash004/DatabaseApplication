@@ -1,4 +1,4 @@
-from SimpleConstraints import SimpleTypesAndConstraints
+from SimpleSql.Models.SimpleConstraints import SimpleTypesAndConstraints
 
 
 class SimpleParam:

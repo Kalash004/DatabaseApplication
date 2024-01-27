@@ -1,7 +1,9 @@
 class SimpleBaseTable:
     table_name: str
 
-    def __init__(self):
-        raise Exception("This method of creating such file is not supported")
+    def __init__(self, **kwargs):
 
-    def
+
+
+
+    def send_table_to_control(self):

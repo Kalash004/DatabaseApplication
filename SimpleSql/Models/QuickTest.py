@@ -11,4 +11,4 @@ class Test(SimpleBaseTable):
 
 
 if __name__ == "__main__":
-    test1 = Test()
+    test1 = Test(name="Testing")

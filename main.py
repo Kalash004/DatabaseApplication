@@ -1,16 +1,23 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from SimpleSql.Models.SimpleConstraints import SimpleTypesAndConstraints
+from SimpleSql.Models.SimpleParam import SimpleParam
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+#  type(self).__dict__
+class parent:
+    def __init__(self, **kwargs):
+        child_fields = type(self).__dict__
+        for attribute, value in kwargs.items():
+            if attribute in child_fields.keys():
+                setattr(type(self), attribute, value)
 
 
-# Press the green button in the gutter to run the script.
+class child(parent):
+    stuff = SimpleParam(SimpleTypesAndConstraints.INT)
+
+    def __repr__(self):
+        return self.stuff
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    child = child(stuff="Testing")
+    print(child)
