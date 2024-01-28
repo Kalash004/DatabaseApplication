@@ -38,5 +38,5 @@ class Application:
         builder = Builder()
         # Send tables
         # Obtain SQLHolder
-        holder = builder.build_sql()
+        holder = builder.build_sql(self.__tables)
         setattr(type(self), '__query_obj', holder)

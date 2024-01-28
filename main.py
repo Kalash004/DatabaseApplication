@@ -25,4 +25,4 @@ if __name__ == '__main__':
     child2 = Child(id=2, stuff="Not hello")
     another = Anotherone(id=1, stuff="Ah")
     app = Application()
-    print()
+    app.start()

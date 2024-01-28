@@ -28,4 +28,5 @@ class SimpleBaseTable:
                     structure.append(i)
         return structure
 
-
+    def __repr__(self):
+        return str(self.struct)
