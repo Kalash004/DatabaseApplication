@@ -1,7 +1,7 @@
 import mysql.connector
 
-import SimpleSql.Models.SimpleSQLDbConfig as Config
-from SimpleSql.Models.StateEnum import ConnectionState
+import SimpleSql.Models.Configs.SimpleSQLDbConfig as Config
+from SimpleSql.Models.Enums.StateEnum import ConnectionState
 
 
 # TODO: Make singleton

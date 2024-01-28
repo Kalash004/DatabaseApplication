@@ -1,7 +1,7 @@
 import unittest
 
 from SimpleSql.Core.Connector.SimpleSQLConnector import SimpleSQLConnector
-from SimpleSql.Models.SimpleSQLDbConfig import SimpleSQLDbConfig
+from SimpleSql.Models.Configs.SimpleSQLDbConfig import SimpleSQLDbConfig
 
 
 class TestConnectionMethods(unittest.TestCase):

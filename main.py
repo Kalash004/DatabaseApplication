@@ -1,23 +1,28 @@
-from SimpleSql.Models.SimpleConstraints import SimpleTypesAndConstraints
-from SimpleSql.Models.SimpleParam import SimpleParam
+from SimpleSql.Core.Controller.Controller import Application
+from SimpleSql.Models.Enums.SimpleConstraintsEnum import SimpleTypesAndConstraints
+from SimpleSql.Models.SimpleTableObjects.SimpleData import SimpleBaseData as Base
+from SimpleSql.Models.SimpleTableObjects.SimpleParam import SimpleParam
 
 
 #  type(self).__dict__
-class parent:
-    def __init__(self, **kwargs):
-        child_fields = type(self).__dict__
-        for attribute, value in kwargs.items():
-            if attribute in child_fields.keys():
-                setattr(type(self), attribute, value)
-
-
-class child(parent):
+class Child(Base):
+    table_name = "Child"
+    id = SimpleParam(SimpleTypesAndConstraints.INT, SimpleTypesAndConstraints.PK)
     stuff = SimpleParam(SimpleTypesAndConstraints.INT)
 
     def __repr__(self):
-        return self.stuff
+        return f"{self.table_name}, {self.id}, {self.stuff}"
+
+
+class Anotherone(Base):
+    table_name = "Table"
+    id = SimpleParam(SimpleTypesAndConstraints.INT, SimpleTypesAndConstraints.PK)
+    stuff = SimpleParam(SimpleTypesAndConstraints.STRING)
 
 
 if __name__ == '__main__':
-    child = child(stuff="Testing")
-    print(child)
+    child = Child(id=1, stuff="Hello")
+    child2 = Child(id=2, stuff="Not hello")
+    another = Anotherone(id=1, stuff="Ah")
+    app = Application()
+    print()

@@ -1,14 +1,15 @@
-from SimpleConstraints import SimpleTypesAndConstraints
-from SimpleParam import SimpleParam
-from SimpleTable import SimpleBaseTable
+class Test():
+    _testing = None
 
-
-class Test(SimpleBaseTable):
-    table_name = "Test"
-    id = SimpleParam(SimpleTypesAndConstraints.INT, [SimpleTypesAndConstraints.PK])
-    name = SimpleParam(SimpleTypesAndConstraints.STRING,
-                       [SimpleTypesAndConstraints.NOT_NULL, SimpleTypesAndConstraints.UNIQUE])
+    def change(self, x):
+        setattr(type(self), '_testing', x)
 
 
 if __name__ == "__main__":
-    test1 = Test(name="Testing")
+    test1 = Test()
+    test2 = Test()
+    print(f"{test1._testing} : {test2._testing}")
+    test2.change("2")
+    print(f"{test1._testing} : {test2._testing}")
+    test1.change("1")
+    print(f"{test1._testing} : {test2._testing}")
