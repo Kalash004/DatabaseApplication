@@ -1,3 +1,6 @@
+from SimpleSql.Models.Enums.SimpleDataTypesEnum import SimpleTypes as Types
+
+
 class SimpleSQL:
     def __init__(self):
         self.table_name = None
@@ -22,12 +25,15 @@ class SimpleQueryBuilder:
         # remove table name from structure
         table_copy = _table.struct.copy()
         self.__remove_tablename(table_copy)
+        query = None
         for i, attribute in enumerate(table_copy):
-            query =
             name = attribute[0]
             params = attribute[1]
+            query += name
+            query = self.__set_contraints(query)
 
         mysql_creation_q = (f"CREATE TABLE {table_name}("
+                            f"{query}"
                             f")")
         return mysql_creation_q
 
@@ -51,3 +57,19 @@ class SimpleQueryBuilder:
     def __remove_tablename(self, table):
         name = self.__find_tablename(table)
         table.remove(name)
+
+    def __set_contraints(self, query: str, constraints) -> str:
+        type = None
+        const_copy = constraints.copy()
+        for constraint in const_copy:
+            if constraint in Types:
+                type = constraint.value
+
+        if type is None:
+            raise Exception(f"Error at QueryBuilder, {constraint} didnt contain data type")
+
+        for loop, constraint in const_copy:
+    # if loop is not 0 or clean_constraints :
+    #         domain constraints
+    # if constraint in Types:
+    #     clean_constraints = constraint.value
