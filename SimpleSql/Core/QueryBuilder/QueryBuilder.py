@@ -23,7 +23,7 @@ class SimpleQueryBuilder:
         table_copy = _table.struct.copy()
         self.__remove_tablename(table_copy)
         for i, attribute in enumerate(table_copy):
-            query =
+            query = None
             name = attribute[0]
             params = attribute[1]
 
