@@ -59,17 +59,19 @@ class SimpleQueryBuilder:
         table.remove(name)
 
     def __set_contraints(self, query: str, constraints) -> str:
-        type = None
+        data_type = None
         const_copy = constraints.copy()
         for constraint in const_copy:
             if constraint in Types:
-                type = constraint.value
+                data_type = constraint.value
+                to_remove = constraint
 
-        if type is None:
-            raise Exception(f"Error at QueryBuilder, {constraint} didnt contain data type")
+        if data_type is None:
+            raise Exception(f"Error at QueryBuilder, {constraint} didn't contain data type")
 
-        for loop, constraint in const_copy:
-    # if loop is not 0 or clean_constraints :
-    #         domain constraints
-    # if constraint in Types:
-    #     clean_constraints = constraint.value
+        const_copy.remove(to_remove)
+
+        clean_constraints = ""
+        for constraint in const_copy:
+            # TODO: Check ! might be bad funcionality
+            clean_constraints = + f" {constraint.value}"
