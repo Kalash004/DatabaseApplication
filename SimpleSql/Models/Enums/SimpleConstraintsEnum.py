@@ -1,12 +1,7 @@
 from enum import Enum
 
 
-class SimpleTypesAndConstraints(Enum):
-    INT = "INT"
-    FLOAT = "FLOAT"
-    BOOL = "BOOL"
-    STRING = "VARCHAR"
-    DATETIME = "DATETIME"
+class SimpleConstraints(Enum):
     NOT_NULL = "NOT NULL"
     UNIQUE = "UNIQUE"
     PK = "PRIMARY KEY"
