@@ -9,3 +9,5 @@ class Test(SimpleSql.Base):
 
 if __name__ == "__main__":
     test = Test(test_Id=1, stuff="Hello")
+    app = SimpleSql.App()
+    app.start()
