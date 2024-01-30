@@ -11,6 +11,7 @@ class SimpleQueryBuilder:
             table_copy = _table.struct.copy()
             self.__remove_tablename(table_copy)
             ddl = self.__build_creation(table_name, table_copy)
+            # TODO: referencing = self.__build_referencing(table_name, table_copy)
             insert = self.__build_insert(table_name)
             select = self.__build_select(table_name)
             update = self.__build_update(table_name, table_copy)
@@ -30,14 +31,14 @@ class SimpleQueryBuilder:
         middle = middle.rstrip(' ,')
         query = (f"CREATE TABLE {table_name}("
                  f"{middle}"
-                 f")")
+                 f");")
         return query
 
     def __build_insert(self, table_name):
-        return f"INSERT INTO {table_name} VALUES ({self.changeable_sign})"
+        return f"INSERT INTO {table_name} VALUES ({self.changeable_sign});"
 
     def __build_select(self, table_name):
-        return f"SELECT {self.changeable_sign} FROM {table_name}"
+        return f"SELECT {self.changeable_sign} FROM {table_name};"
 
     def __build_update(self, table_name, table_copy):
         middle = ""
@@ -46,11 +47,11 @@ class SimpleQueryBuilder:
             middle += f" {name}={self.changeable_sign} "
         query = (f"UPDATE {table_name}"
                  f"SET{middle}"
-                 f"WHERE {self.changeable_sign}")
+                 f"WHERE {self.changeable_sign};")
         return query
 
-    def __build_delete(self, table_name, table):
-        pass
+    def __build_delete(self, table_name):
+        return f"DELETE FROM {table_name} WHERE {self.changeable_sign};"
 
     def __find_tablename(self, struct):
         for item in struct:
@@ -72,3 +73,6 @@ class SimpleQueryBuilder:
             clean_constraints += ","
 
         return query + clean_constraints
+
+    def __build_referencing(self, table_name, table_copy):
+        pass
