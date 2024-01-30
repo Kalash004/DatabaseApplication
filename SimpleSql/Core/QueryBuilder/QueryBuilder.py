@@ -6,6 +6,7 @@ class SimpleQueryBuilder:
         self.changeable_sign = "?"
 
     def build_sql(self, tables):
+        # TODO: create or alter
         built = dict()
         for table_name, _table in tables.items():
             table_copy = _table.struct.copy()
@@ -15,7 +16,7 @@ class SimpleQueryBuilder:
             insert = self.__build_insert(table_name)
             select = self.__build_select(table_name)
             update = self.__build_update(table_name, table_copy)
-            delete = self.__build_delete(table_name, table_copy)
+            delete = self.__build_delete(table_name)
             built[table_name] = Holder(table_name, table_builder_DDL=ddl, insert=insert, select=select, update=update,
                                        delete=delete)
 
@@ -66,13 +67,14 @@ class SimpleQueryBuilder:
         query += f"{data_type.value} "
 
         clean_constraints = ""
-        for constraint in constraints:
-            # TODO: Check ! might be bad funcionality
-            clean_constraints += f"{constraint.value} "
-        else:
-            clean_constraints += ","
-
-        return query + clean_constraints
+        try:
+            for constraint in constraints:
+                # TODO: Check ! might be bad funcionality
+                clean_constraints += f"{constraint.value} "
+            else:
+                clean_constraints += ","
+        finally:
+            return query + clean_constraints
 
     def __build_referencing(self, table_name, table_copy):
         pass

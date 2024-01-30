@@ -23,9 +23,11 @@ class SimpleBaseTable:
     def __get_structure(self, pre_struct):
         structure = []
         for i in inspect.getmembers(pre_struct):
-            if not i[0].startswith('_'):
-                if not inspect.ismethod(i[1]):
-                    structure.append(i)
+            if i[0].startswith('_'):
+                continue
+            if inspect.ismethod(i[1]):
+                continue
+            structure.append(i)
         return structure
 
     def __repr__(self):

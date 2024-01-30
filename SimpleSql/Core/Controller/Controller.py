@@ -37,6 +37,6 @@ class Application:
         # Call query builder
         builder = Builder()
         # Send tables
-        # Obtain SQLHolder
-        holder = builder.build_sql(self.__tables)
-        setattr(type(self), '__query_obj', holder)
+        # Obtain SQLHolder for each table as dict {table_name:SQLHolder}
+        basic_sql_commands = builder.build_sql(self.__tables)
+        setattr(type(self), '__query_obj', basic_sql_commands)

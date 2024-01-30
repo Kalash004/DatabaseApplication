@@ -1,3 +1,5 @@
+import inspect
+
 from SimpleSql.Models.SimpleTableObjects.SimpleTable import SimpleBaseTable
 
 
@@ -23,8 +25,24 @@ class SimpleBaseData:
                 setattr(self, attribute, value)
             else:
                 raise Exception(f"Attribute {attribute} is not a part of this object {type(self)}")
+        if self.__get_count_of_atrs(self) > len(kwargs):
+            raise Exception(f"The amount of **kwargs is not same as the atributes defined in the table")
+
+    # TODO: if count of inputs not same as atributes of class raise error
 
     def __tablename_exists(self):
         if self.table_name is None:
             raise Exception(f"{type(self)} : (table_name = {self.table_name}) cant be None. Please set the name of "
                             f"the table")
+
+    def __get_count_of_atrs(self, pre_struct):
+        structure = []
+        for i in inspect.getmembers(pre_struct):
+            if i[0].startswith('_'):
+                continue
+            if inspect.ismethod(i[1]):
+                continue
+            if i[0] == 'table_name':
+                continue
+            structure.append(i)
+        return len(structure)
