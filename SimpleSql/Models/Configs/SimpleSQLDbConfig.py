@@ -7,5 +7,5 @@ class SimpleSQLDbConfig:
     password: str
     hostname: str
     port: int
-    scheme_name: str
+    database_name: str
     character_set: str

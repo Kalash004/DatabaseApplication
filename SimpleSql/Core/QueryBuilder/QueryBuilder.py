@@ -12,7 +12,7 @@ class SimpleQueryBuilder:
     def __init__(self):
         self.changeable_sign = "?"
 
-    def build_sql(self, tables):
+    def build_sql(self, tables) -> dict[str:Holder]:
         # TODO: create or alter
         built = dict()
         for table_name, _table in tables.items():
@@ -27,6 +27,7 @@ class SimpleQueryBuilder:
             built[table_name] = Holder(table_name, table_builder_DDL=ddl, references=referencing, insert=insert,
                                        select=select, update=update,
                                        delete=delete)
+        return built
 
     def __build_creation(self, table_name, table_copy):
         middle = ""

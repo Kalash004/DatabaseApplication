@@ -9,8 +9,8 @@ class SimpleParam:
         self.constraints: [SimpleConstraints] = constraints
         try:
             self.references = other["references"]
-            if self.references is not type([]):
+            if not isinstance(self.references, type([])):
                 self.references = [self.references]
-        except Exception as err:
+        except Exception:
             # TODO: find exception that gets cought if other["references"] doesnt exist
             self.references = None

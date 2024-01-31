@@ -1,4 +1,12 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+import SimpleSql
 from SimpleSql.Core.QueryBuilder.QueryBuilder import SimpleQueryBuilder as Builder
+
+if TYPE_CHECKING:
+    from SimpleSql.Models.Configs.SimpleSQLDbConfig import SimpleSQLDbConfig as Config
 
 
 class Application:
@@ -23,30 +31,36 @@ class Application:
             if item[0] == "table_name":
                 return item[1]
 
-    def start(self):
+    def start(self, config):
         try:
+            # Connect to the database
+            self.connector = SimpleSql.Connector(db_config=config)
             # Build queries
             self.build_queries()
             # Check if database exists
-            if not self.database_exists():
+            if not self.database_exists(config):
                 self.__create_database()
             # Create/alter database
             # Create/alter tables (DML)
-        except:
-            pass
+        except Exception as err:
+            raise err
             # TODO: Better exception cases
 
     def build_queries(self):
-        # Call query builder
         builder = Builder()
-        # Send tables
-        # Obtain SQLHolder for each table as dict {table_name:SQLHolder}
         basic_sql_commands = builder.build_sql(self.__tables)
         setattr(type(self), '__query_obj', basic_sql_commands)
         return
 
-    def database_exists(self) -> bool:
-        pass
+    def database_exists(self, config: Config) -> bool:
+        query = f"SHOW DATABASES"
+        response = self.connector.query({
+            query: None
+        })
+        for schema in response[0]:
+            if config.database_name in schema:
+                return True
+        return False
 
     def __create_database(self):
         pass

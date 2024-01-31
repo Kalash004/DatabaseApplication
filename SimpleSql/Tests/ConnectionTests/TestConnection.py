@@ -6,16 +6,9 @@ from SimpleSql.Models.Configs.SimpleSQLDbConfig import SimpleSQLDbConfig
 
 class TestConnectionMethods(unittest.TestCase):
     def setUp(self):
-        self.__CONNECTION_CONFIG = SimpleSQLDbConfig(username="root", password="Ka32167890", hostname="localhost",
+        self.__CONNECTION_CONFIG = SimpleSQLDbConfig(username="f", password="Ka32167890", hostname="localhost",
                                                      port=0,
-                                                     scheme_name="Testing", character_set="Testing")
-
-    # username: str
-    # password: str
-    # hostname: str
-    # port: int
-    # scheme_name: str
-    # character_set: str
+                                                     database_name="Testing", character_set="Testing")
 
     def test_connection(self):
         connector: SimpleSQLConnector = SimpleSQLConnector(db_config=self.__CONNECTION_CONFIG)

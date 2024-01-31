@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import typing
+
 import mysql.connector
 
 import SimpleSql.Models.Configs.SimpleSQLDbConfig as Config
@@ -25,17 +27,17 @@ class SimpleSQLConnector:
         self.state: ConnectionState
         self.config: Config = db_config
         try:
-            self.__connection = self.generate_conenction(db_config=self.config)
+            self.__connection = self.connect(db_config=self.config)
             self.state = ConnectionState.CONNECTED
         except Exception as err:
             self.state = ConnectionState.ERROR
             raise Exception(f"Error occured while initiating connection to the database: {err}")
 
-    def query(self, query_args: dict[str, [str]]) -> [str]:
+    def query(self, query_args: typing.Dict[str: [str]]) -> [str, ]:
         # TODO: Check sql syntaxe for possible errors with ? if the args are empty
         try:
             if not self.check_connection():
-                raise ConnectionException("Could not create connection to the database")
+                self.connect(self.config)
             cursor = self.__connection.cursor()
             responses = []
             self.__connection.start_transaction()
@@ -44,34 +46,46 @@ class SimpleSQLConnector:
                     cursor.execute(query)
                 else:
                     cursor.execute(query, args)
-                responses.append(str(cursor.fetchall()))
+                responses.append(cursor.fetchall())
             self.__connection.commit()
             return responses
-        except ConnectionException:
-            reconencted = False
-            for i in range(0, 2):
-                if reconencted:
-                    continue
-                self.__connection = self.generate_conenction(self.config)
-                if self.check_connection():
-                    reconencted = True
-            raise Exception(f"Retried connecting 3 times, couldnt connect to the database {self.config.hostname}")
         except Exception as err:
             self.state = ConnectionState.ERROR
             raise Exception(f"Error occured while quering the database: {err}")
 
-    def generate_conenction(self, db_config: Config):
+    def connect(self, db_config: Config):
         try:
-            conection = mysql.connector.connect(
+            connection = self.__generate_conenction(db_config)
+            if not connection.is_connected():
+                raise ConnectionException("Could not create connection to the database")
+            self.state = ConnectionState.CONNECTED
+            return connection
+        except ConnectionException:
+            e = None
+            for i in range(0, 2):
+                try:
+                    connection = self.__generate_conenction(db_config)
+                except Exception as err:
+                    e = err
+                    continue
+                if connection.is_connected():
+                    return connection
+            raise Exception(f"Retried connecting 3 times, couldnt connect to the database {self.config.hostname}: {e}")
+        except Exception as err:
+            self.state = ConnectionState.ERROR
+            raise Exception(f"Error happened while initializing connection to the database server: {err}")
+
+    @staticmethod
+    def __generate_conenction(db_config: Config):
+        try:
+            connection = mysql.connector.connect(
                 host=db_config.hostname,
                 user=db_config.username,
                 password=db_config.password
             )
-            self.state = ConnectionState.CONNECTED
-            return conection
+            return connection
         except Exception as err:
-            self.state = ConnectionState.ERROR
-            raise Exception(f"Error happened while initializing connection to the database server: {err}")
+            raise ConnectionException(err)
 
     def set_conn_state(self, state: ConnectionState):
         if not isinstance(state, ConnectionState):

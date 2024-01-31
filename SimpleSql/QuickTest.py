@@ -27,11 +27,9 @@ class Typek(SimpleSql.Base):
     typek_Id = SimpleSql.Param(SimpleSql.Types.INT, )
 
 
-
-
 if __name__ == "__main__":
-    test = Test(test_Id=1, stuff="Hello")
-    test2 = Test2(test2_Id=1, stuff="Hello", stuff2="Watsup ?", ref=1)
-    person = Person(person_Id=1, stuff="My text", ref_to_test2=2)
+    config = SimpleSql.Config(username="root", password="Ka32167890", hostname="localhost",
+                              port=0,
+                              database_name="Testing", character_set="Testing")
     app = SimpleSql.App()
-    app.start()
+    app.start(config)
