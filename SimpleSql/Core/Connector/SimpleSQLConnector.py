@@ -1,6 +1,7 @@
 import mysql.connector
 
 import SimpleSql.Models.Configs.SimpleSQLDbConfig as Config
+from SimpleSql.Core.Exceptions.ConnectionException import ConnectionException
 from SimpleSql.Models.Enums.StateEnum import ConnectionState
 
 
@@ -32,7 +33,7 @@ class SimpleSQLConnector:
         # TODO: Check sql syntaxe for possible errors with ? if the args are empty
         try:
             if not self.check_connection():
-                self.generate_conenction(self.config)
+                raise ConnectionException("Could not create connection to the database")
             cursor = self.__connection.cursor()
             responses = []
             self.__connection.start_transaction()
@@ -44,6 +45,15 @@ class SimpleSQLConnector:
                 responses.append(str(cursor.fetchall()))
             self.__connection.commit()
             return responses
+        except ConnectionException as err:
+            reconencted = False
+            for i in range(0, 2):
+                if reconencted:
+                    continue
+                self.__connection = self.generate_conenction(self.config)
+                if self.check_connection():
+                    reconencted = True
+            raise Exception(f"Retried connecting 3 times, couldnt connect to the database {}")
         except Exception as err:
             self.state = ConnectionState.ERROR
             raise Exception(f"Error occured while quering the database: {err}")
@@ -70,4 +80,5 @@ class SimpleSQLConnector:
         if not self.__connection.is_connected():
             self.state = ConnectionState.CLOSED
             return False
+        self.state = ConnectionState.CONNECTED
         return True

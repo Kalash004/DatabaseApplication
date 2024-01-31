@@ -2,8 +2,6 @@ from enum import Enum
 
 
 class ConnectionState(Enum):
-    CLOSED = 0
-    CONNECTED = 1
-    CONNECTING = 2
-    CLOSING = 3
-    ERROR = 4
+    CLOSED = "Conenction was closed"
+    CONNECTED = "Connected to the database"
+    ERROR = "Error occured"

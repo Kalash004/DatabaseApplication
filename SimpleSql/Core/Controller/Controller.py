@@ -12,9 +12,6 @@ class Application:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self):
-        pass
-
     def add_table(self, table):
         table_name = self._find_tablename(table)
         if not self.__tables.__contains__(table_name):
@@ -27,11 +24,17 @@ class Application:
                 return item[1]
 
     def start(self):
-        # Build queries
-        self.build_queries()
-
-        # Create/alter database
-        # Create/alter tables (DML)
+        try:
+            # Build queries
+            self.build_queries()
+            # Check if database exists
+            if not self.database_exists():
+                self.__create_database()
+            # Create/alter database
+            # Create/alter tables (DML)
+        except:
+            pass
+            # TODO: Better exception cases
 
     def build_queries(self):
         # Call query builder
@@ -40,3 +43,10 @@ class Application:
         # Obtain SQLHolder for each table as dict {table_name:SQLHolder}
         basic_sql_commands = builder.build_sql(self.__tables)
         setattr(type(self), '__query_obj', basic_sql_commands)
+        return
+
+    def database_exists(self) -> bool:
+        pass
+
+    def __create_database(self):
+        pass

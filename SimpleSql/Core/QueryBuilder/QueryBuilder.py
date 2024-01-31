@@ -1,4 +1,11 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from SimpleSql.Models.Models.SQLHolder import SimpleSQLHolder as Holder
+
+if TYPE_CHECKING:
+    from SimpleSql.Models.Models.SimpleReference import SimpleReference
 
 
 class SimpleQueryBuilder:
@@ -12,12 +19,13 @@ class SimpleQueryBuilder:
             table_copy = _table.struct.copy()
             self.__remove_tablename(table_copy)
             ddl = self.__build_creation(table_name, table_copy)
-            # TODO: referencing = self.__build_referencing(table_name, table_copy)
+            referencing = self.__build_referencing(table_name, table_copy)
             insert = self.__build_insert(table_name)
             select = self.__build_select(table_name)
             update = self.__build_update(table_name, table_copy)
             delete = self.__build_delete(table_name)
-            built[table_name] = Holder(table_name, table_builder_DDL=ddl, insert=insert, select=select, update=update,
+            built[table_name] = Holder(table_name, table_builder_DDL=ddl, references=referencing, insert=insert,
+                                       select=select, update=update,
                                        delete=delete)
 
     def __build_creation(self, table_name, table_copy):
@@ -28,8 +36,9 @@ class SimpleQueryBuilder:
             constraints = attribute[1].constraints
             middle += f"{name} "
             middle = self.__set_contraints(middle, data_type, constraints)
+        else:
+            middle = middle.rstrip(" ,")
 
-        middle = middle.rstrip(' ,')
         query = (f"CREATE TABLE {table_name}("
                  f"{middle}"
                  f");")
@@ -65,7 +74,6 @@ class SimpleQueryBuilder:
 
     def __set_contraints(self, query: str, data_type, constraints) -> str:
         query += f"{data_type.value} "
-
         clean_constraints = ""
         try:
             for constraint in constraints:
@@ -73,8 +81,23 @@ class SimpleQueryBuilder:
                 clean_constraints += f"{constraint.value} "
             else:
                 clean_constraints += ","
+        except Exception:
+            clean_constraints += ","
         finally:
             return query + clean_constraints
 
     def __build_referencing(self, table_name, table_copy):
-        pass
+        ref_queries = dict()
+        for item in table_copy:
+            if not item[1].references:
+                continue
+            for reference in item[1].references:
+                reference: SimpleReference = reference
+                referenced_table_name = reference.table_name
+                attr_name = reference.attribute_name
+                query = (f"ALTER TABLE {table_name} "
+                         f"ADD CONSTRAINT FK_{item[0]}_{table_name} "
+                         f"FOREIGN KEY ({item[0]}) "
+                         f"REFERENCES {referenced_table_name}({attr_name});")
+                ref_queries[referenced_table_name] = query
+        return ref_queries
