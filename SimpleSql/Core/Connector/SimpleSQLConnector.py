@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import mysql.connector
 
 import SimpleSql.Models.Configs.SimpleSQLDbConfig as Config
@@ -11,7 +13,7 @@ class SimpleSQLConnector:
 
     def __new__(cls, *args, **kwargs):
         try:
-            config = kwargs['db_config']
+            kwargs['db_config']
         except Exception as err:
             raise Exception(f"db_config was not given: {err}")
         if cls._instance is None:
@@ -21,10 +23,10 @@ class SimpleSQLConnector:
     def __init__(self, db_config: Config):
         self.__connection: mysql.connector.connection
         self.state: ConnectionState
-        self.config = db_config
+        self.config: Config = db_config
         try:
-            self.state = ConnectionState.CONNECTING
             self.__connection = self.generate_conenction(db_config=self.config)
+            self.state = ConnectionState.CONNECTED
         except Exception as err:
             self.state = ConnectionState.ERROR
             raise Exception(f"Error occured while initiating connection to the database: {err}")
@@ -45,7 +47,7 @@ class SimpleSQLConnector:
                 responses.append(str(cursor.fetchall()))
             self.__connection.commit()
             return responses
-        except ConnectionException as err:
+        except ConnectionException:
             reconencted = False
             for i in range(0, 2):
                 if reconencted:
@@ -53,7 +55,7 @@ class SimpleSQLConnector:
                 self.__connection = self.generate_conenction(self.config)
                 if self.check_connection():
                     reconencted = True
-            raise Exception(f"Retried connecting 3 times, couldnt connect to the database {}")
+            raise Exception(f"Retried connecting 3 times, couldnt connect to the database {self.config.hostname}")
         except Exception as err:
             self.state = ConnectionState.ERROR
             raise Exception(f"Error occured while quering the database: {err}")
