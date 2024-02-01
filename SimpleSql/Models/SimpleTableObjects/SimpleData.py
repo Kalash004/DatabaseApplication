@@ -8,14 +8,11 @@ class SimpleBaseData:
     table_name: str = None
 
     def __init__(self, **kwargs):
-        try:
-            # Create table object and (Send table object to the controller singleton) - done in init of table object
-            self.__tablename_exists()
-            SimpleBaseTable(self)
-            # Set values of this ojbect
-            self.__setup(kwargs)
-        except Exception as e:
-            raise Exception(f"Exectpion occured while initializing {type(self)}: {e}")
+        # Create table object and (Send table object to the controller singleton) - done in init of table object
+        self.__tablename_exists()
+        SimpleBaseTable(self)
+        # Set values of this ojbect
+        self.__setup(kwargs)
 
     def __setup(self, kwargs):
         child_fields = type(self).__dict__

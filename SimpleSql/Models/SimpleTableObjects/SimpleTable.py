@@ -1,22 +1,18 @@
 import inspect
 
-from SimpleSql.Core.Controller.Controller import Application
+from SimpleSql.Core.Controller.Controller import Controller
 
 
 class SimpleBaseTable:
 
     def __init__(self, pre_struct):
-        try:
-            self.struct = self.__get_structure(pre_struct)
-            # check structure for errors
-            # send self to the controller singleton
-            self.__send_table_to_control()
-
-        except Exception as e:
-            raise Exception(f"Exectpion occured while initializing {type(self)}: {e}")
+        self.struct = self.__get_structure(pre_struct)
+        # check structure for errors
+        # send self to the controller singleton
+        self.__send_table_to_control()
 
     def __send_table_to_control(self):
-        app = Application()
+        app = Controller()
         app.add_table(self)
         # Send table object to the controller singleton
 

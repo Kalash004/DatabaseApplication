@@ -1,5 +1,5 @@
 from SimpleSql.Core.Connector.SimpleSQLConnector import SimpleSQLConnector as Connector
-from SimpleSql.Core.Controller.Controller import Application as App
+from SimpleSql.Core.Controller.Controller import Controller as App
 from SimpleSql.Models.Configs.SimpleSQLDbConfig import SimpleSQLDbConfig as Config
 from SimpleSql.Models.Enums.SimpleConstraintsEnum import SimpleConstraints as Constraints
 from SimpleSql.Models.Enums.SimpleDataTypesEnum import SimpleTypes as Types

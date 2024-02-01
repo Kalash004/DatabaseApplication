@@ -26,15 +26,12 @@ class SimpleSQLConnector:
         self.__connection: mysql.connector.connection
         self.state: ConnectionState
         self.config: Config = db_config
-        try:
-            self.__connection = self.connect(db_config=self.config)
-            self.state = ConnectionState.CONNECTED
-        except Exception as err:
-            self.state = ConnectionState.ERROR
-            raise Exception(f"Error occured while initiating connection to the database: {err}")
+        self.__connection = self.connect(db_config=self.config)
+        self.state = ConnectionState.CONNECTED
 
     def query(self, query_args: typing.Dict[str: [str]]) -> [str, ]:
         # TODO: Check sql syntaxe for possible errors with ? if the args are empty
+        global cursor
         try:
             if not self.check_connection():
                 self.connect(self.config)
@@ -52,6 +49,8 @@ class SimpleSQLConnector:
         except Exception as err:
             self.state = ConnectionState.ERROR
             raise Exception(f"Error occured while quering the database: {err}")
+        finally:
+            cursor.close()
 
     def connect(self, db_config: Config):
         try:

@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from SimpleSql.Models.Configs.SimpleSQLDbConfig import SimpleSQLDbConfig as Config
 
 
-class Application:
+class Controller:
     # TODO: Add an initiating sql commands for queries that are not supported by the library
     _instance = None
     __tables = dict()
@@ -20,9 +20,10 @@ class Application:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, db_config: Config):
+    def __init__(self, db_config: Config = None):
         self.config = db_config
-        self.connector = SimpleSql.Connector(db_config=self.config)
+        self.connector = None
+        self.__query_obj = None
 
     def add_table(self, table):
         table_name = self._find_tablename(table)
@@ -38,11 +39,16 @@ class Application:
     def start(self):
         try:
             # Build queries
+            if self.config is None:
+                raise Exception("Database config was not given")
+            self.connector = SimpleSql.Connector(db_config=self.config)
             self.build_queries()
             # Check if database exists
             if not self.database_exists():
                 print(self.__create_database())
-            # Create/alter tables (DML)
+            self.use_database()
+            self.starter_dml()
+
         except Exception as err:
             raise err
             # TODO: Better exception cases
@@ -50,7 +56,7 @@ class Application:
     def build_queries(self):
         builder = Builder()
         basic_sql_commands = builder.build_sql(self.__tables)
-        setattr(type(self), '__query_obj', basic_sql_commands)
+        self.__query_obj = basic_sql_commands
         return
 
     def database_exists(self) -> bool:
@@ -71,3 +77,44 @@ class Application:
             }
         )
         return response
+
+    def create_tables(self):
+        for table_name, item in self.__query_obj.items():
+            if not self.table_exists(table_name):
+                self.connector.query(
+                    {
+                        item.table_builder_DDL: None
+                    }
+                )
+
+    def reference_tables(self):
+        for item in self.__query_obj.values():
+            for ref in item.references.values():
+                self.connector.query(
+                    {
+                        ref: None
+                    }
+                )
+
+    def use_database(self):
+        query = f"USE {self.config.database_name}"
+        self.connector.query(
+            {
+                query: None
+            }
+        )
+
+    def table_exists(self, table_name):
+        query = (f"SELECT COUNT(*) "
+                 f"FROM information_schema.tables "
+                 f"WHERE table_name = '{table_name}' ")
+        respones = self.connector.query(
+            {
+                query: None
+            }
+        )
+        return respones[0][0][0] >= 1
+
+    def starter_dml(self):
+        self.create_tables()
+        self.reference_tables()
