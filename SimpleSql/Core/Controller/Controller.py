@@ -42,8 +42,6 @@ class Application:
             # Check if database exists
             if not self.database_exists():
                 print(self.__create_database())
-
-            # Create/alter database
             # Create/alter tables (DML)
         except Exception as err:
             raise err
