@@ -20,6 +20,10 @@ class Application:
             cls._instance = super().__new__(cls)
         return cls._instance
 
+    def __init__(self, db_config: Config):
+        self.config = db_config
+        self.connector = SimpleSql.Connector(db_config=self.config)
+
     def add_table(self, table):
         table_name = self._find_tablename(table)
         if not self.__tables.__contains__(table_name):
@@ -31,15 +35,14 @@ class Application:
             if item[0] == "table_name":
                 return item[1]
 
-    def start(self, config):
+    def start(self):
         try:
-            # Connect to the database
-            self.connector = SimpleSql.Connector(db_config=config)
             # Build queries
             self.build_queries()
             # Check if database exists
-            if not self.database_exists(config):
-                self.__create_database()
+            if not self.database_exists():
+                print(self.__create_database())
+
             # Create/alter database
             # Create/alter tables (DML)
         except Exception as err:
@@ -52,15 +55,21 @@ class Application:
         setattr(type(self), '__query_obj', basic_sql_commands)
         return
 
-    def database_exists(self, config: Config) -> bool:
+    def database_exists(self) -> bool:
         query = f"SHOW DATABASES"
         response = self.connector.query({
             query: None
         })
         for schema in response[0]:
-            if config.database_name in schema:
+            if self.config.database_name in schema:
                 return True
         return False
 
     def __create_database(self):
-        pass
+        query = f"CREATE DATABASE {self.config.database_name}"
+        response = self.connector.query(
+            {
+                query: None
+            }
+        )
+        return response

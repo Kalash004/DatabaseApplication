@@ -31,5 +31,5 @@ if __name__ == "__main__":
     config = SimpleSql.Config(username="root", password="Ka32167890", hostname="localhost",
                               port=0,
                               database_name="Testing", character_set="Testing")
-    app = SimpleSql.App()
-    app.start(config)
+    app = SimpleSql.App(config)
+    app.start()
