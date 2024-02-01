@@ -35,34 +35,34 @@ class SimpleQueryBuilder:
             name = attribute[0]
             data_type = attribute[1].datatype
             constraints = attribute[1].constraints
-            middle += f"{name} "
+            middle += f"`{name}` "
             middle = self.__set_contraints(middle, data_type, constraints)
         else:
             middle = middle.rstrip(" ,")
 
-        query = (f"CREATE TABLE {table_name}("
+        query = (f"CREATE TABLE `{table_name}`("
                  f"{middle}"
                  f");")
         return query
 
     def __build_insert(self, table_name):
-        return f"INSERT INTO {table_name} VALUES ({self.changeable_sign});"
+        return f"INSERT INTO `{table_name}` VALUES ({self.changeable_sign});"
 
     def __build_select(self, table_name):
-        return f"SELECT {self.changeable_sign} FROM {table_name};"
+        return f"SELECT `{self.changeable_sign}` FROM `{table_name}`;"
 
     def __build_update(self, table_name, table_copy):
         middle = ""
         for attribute in table_copy:
             name = attribute[0]
-            middle += f" {name}={self.changeable_sign} "
-        query = (f"UPDATE {table_name}"
+            middle += f" `{name}`={self.changeable_sign} "
+        query = (f"UPDATE `{table_name}`"
                  f"SET{middle}"
                  f"WHERE {self.changeable_sign};")
         return query
 
     def __build_delete(self, table_name):
-        return f"DELETE FROM {table_name} WHERE {self.changeable_sign};"
+        return f"DELETE FROM `{table_name}` WHERE {self.changeable_sign};"
 
     def __find_tablename(self, struct):
         for item in struct:
@@ -83,6 +83,7 @@ class SimpleQueryBuilder:
             else:
                 clean_constraints += ","
         except Exception:
+            # TODO: Better exception check
             clean_constraints += ","
         finally:
             return query + clean_constraints
@@ -96,7 +97,7 @@ class SimpleQueryBuilder:
                 reference: SimpleReference = reference
                 referenced_table_name = reference.table_name
                 attr_name = reference.attribute_name
-                query = (f"ALTER TABLE {table_name} "
+                query = (f"ALTER TABLE `{table_name}` "
                          f"ADD CONSTRAINT FK_{item[0]}_{table_name} "
                          f"FOREIGN KEY ({item[0]}) "
                          f"REFERENCES {referenced_table_name}({attr_name});")

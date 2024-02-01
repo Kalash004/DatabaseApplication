@@ -17,7 +17,7 @@ class SimpleSQLConnector:
         try:
             kwargs['db_config']
         except Exception as err:
-            raise Exception(f"db_config was not given: {err}")
+            raise Exception(f"db_config was not given: {err}") from err
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
@@ -48,7 +48,7 @@ class SimpleSQLConnector:
             return responses
         except Exception as err:
             self.state = ConnectionState.ERROR
-            raise Exception(f"Error occured while quering the database: {err}")
+            raise Exception(f"Error occured while quering the database: {err}") from err
         finally:
             cursor.close()
 
@@ -69,10 +69,11 @@ class SimpleSQLConnector:
                     continue
                 if connection.is_connected():
                     return connection
-            raise Exception(f"Retried connecting 3 times, couldnt connect to the database {self.config.hostname}: {e}")
+            raise Exception(
+                f"Retried connecting 3 times, couldnt connect to the database {self.config.hostname}: {e}") from e
         except Exception as err:
             self.state = ConnectionState.ERROR
-            raise Exception(f"Error happened while initializing connection to the database server: {err}")
+            raise Exception(f"Error happened while initializing connection to the database server: {err}") from err
 
     @staticmethod
     def __generate_conenction(db_config: Config):

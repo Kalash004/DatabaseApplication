@@ -25,12 +25,13 @@ class Controller:
         self.connector = None
         self.__query_obj = None
 
-    def add_table(self, table):
+    def _add_table(self, table):
         table_name = self._find_tablename(table)
         if not self.__tables.__contains__(table_name):
             self.__tables[table_name] = table
 
-    def _find_tablename(self, table):
+    @staticmethod
+    def _find_tablename(table):
         struct = table.struct
         for item in struct:
             if item[0] == "table_name":
@@ -86,6 +87,7 @@ class Controller:
                         item.table_builder_DDL: None
                     }
                 )
+                self.reference_tables()
 
     def reference_tables(self):
         for item in self.__query_obj.values():
@@ -117,4 +119,3 @@ class Controller:
 
     def starter_dml(self):
         self.create_tables()
-        self.reference_tables()

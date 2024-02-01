@@ -13,7 +13,7 @@ class SimpleBaseTable:
 
     def __send_table_to_control(self):
         app = Controller()
-        app.add_table(self)
+        app._add_table(self)
         # Send table object to the controller singleton
 
     def __get_structure(self, pre_struct):

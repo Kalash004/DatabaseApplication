@@ -1,6 +1,6 @@
 import unittest
+
 import SimpleSql
-from SimpleSql.Core.Connector.SimpleSQLConnector import SimpleSQLConnector
 from SimpleSql.Models.Configs.SimpleSQLDbConfig import SimpleSQLDbConfig
 
 
@@ -12,9 +12,11 @@ class Test(SimpleSql.Base):
 
 class TestQueryBuilderMethods(unittest.TestCase):
     def setUp(self):
+        self.__CONNECTION_CONFIG = SimpleSQLDbConfig(username="root", password="Ka32167890", hostname="localhost",
+                                                     port=0,
+                                                     database_name="Testing", character_set="Testing")
         self.test = Test(test_Id=1, stuff="Stuff")
-        self.app = SimpleSql.App()
+        self.app = SimpleSql.App(self.__CONNECTION_CONFIG)
 
     def testBuilder(self):
         self.app.start()
-
