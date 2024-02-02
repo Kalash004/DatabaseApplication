@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 class SimpleQueryBuilder:
     def __init__(self):
-        self.changeable_sign = "?"
+        self.changeable_sign = "%s"
 
     def build_sql(self, tables) -> dict[str:Holder]:
         # TODO: create or alter
@@ -20,7 +20,7 @@ class SimpleQueryBuilder:
             self.__remove_tablename(table_copy)
             ddl = self.__build_creation(table_name, table_copy)
             referencing = self.__build_referencing(table_name, table_copy)
-            insert = self.__build_insert(table_name)
+            insert = self.__build_insert(table_name, table_copy)
             select = self.__build_select(table_name)
             update = self.__build_update(table_name, table_copy)
             delete = self.__build_delete(table_name)
@@ -45,8 +45,13 @@ class SimpleQueryBuilder:
                  f");")
         return query
 
-    def __build_insert(self, table_name):
-        return f"INSERT INTO `{table_name}` VALUES ({self.changeable_sign});"
+    def __build_insert(self, table_name, table_copy):
+        bindable_string = ""
+        for attribute in table_copy:
+            bindable_string += f"{self.changeable_sign}, "
+        else:
+            bindable_string = bindable_string.rstrip(" ").rstrip(",")
+        return f"INSERT INTO `{table_name}` VALUES ({bindable_string});"
 
     def __build_select(self, table_name):
         return f"SELECT `{self.changeable_sign}` FROM `{table_name}`;"

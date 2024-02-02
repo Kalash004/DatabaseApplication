@@ -32,8 +32,9 @@ class SimpleBaseData:
             raise Exception(f"{type(self)} : (table_name = {self.table_name}) cant be None. Please set the name of "
                             f"the table")
 
-    def __get_count_of_atrs(self, pre_struct):
-        structure = []
+    @staticmethod
+    def __get_count_of_atrs(pre_struct):
+        struct = []
         for i in inspect.getmembers(pre_struct):
             if i[0].startswith('_'):
                 continue
@@ -41,5 +42,5 @@ class SimpleBaseData:
                 continue
             if i[0] == 'table_name':
                 continue
-            structure.append(i)
-        return len(structure)
+            struct.append(i)
+        return len(struct)

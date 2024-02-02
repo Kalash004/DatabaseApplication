@@ -3,6 +3,7 @@ from __future__ import annotations
 import typing
 
 import mysql.connector
+from mysql.connector import DatabaseError
 
 import SimpleSql.Models.Configs.SimpleSQLDbConfig as Config
 from SimpleSql.Core.Exceptions.ConnectionException import ConnectionException
@@ -46,6 +47,11 @@ class SimpleSQLConnector:
                 responses.append(cursor.fetchall())
             self.__connection.commit()
             return responses
+        except DatabaseError as err:
+            if err.errno == 1826:
+                return err
+            else:
+                raise err
         except Exception as err:
             self.state = ConnectionState.ERROR
             raise Exception(f"Error occured while quering the database: {err}") from err

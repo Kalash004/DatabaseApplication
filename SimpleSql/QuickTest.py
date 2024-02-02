@@ -18,7 +18,8 @@ if __name__ == "__main__":
     config = SimpleSql.Config(username="root", password="Ka32167890", hostname="localhost",
                               port=0,
                               database_name="Testing", character_set="Testing")
-    p = Person(person_Id=1, stuff="Person stuff", ref_to_test2=1)
-    t = Test2(test2_Id=1, stuff="Test2 stuff")
+    p = Person(person_Id=2, stuff="Heeee", ref_to_test2=2)
+    t = Test2(test2_Id=2, stuff="Heeeeee")
     app = SimpleSql.App(config)
     app.start()
+    app.insert_data(t, p)

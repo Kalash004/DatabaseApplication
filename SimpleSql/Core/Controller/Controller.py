@@ -13,7 +13,6 @@ class Controller:
     # TODO: Add an initiating sql commands for queries that are not supported by the library
     _instance = None
     __tables = dict()
-    __query_obj = None
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -87,7 +86,6 @@ class Controller:
                         item.table_builder_DDL: None
                     }
                 )
-                self.reference_tables()
 
     def reference_tables(self):
         for item in self.__query_obj.values():
@@ -119,3 +117,21 @@ class Controller:
 
     def starter_dml(self):
         self.create_tables()
+        self.reference_tables()
+
+    def insert_data(self, *to_insert):
+        for item in to_insert:
+            name = item.table_name
+            table = self.__tables[name]
+            query = self.__query_obj[name].insert
+            values = []
+            for attr in self.__tables[name].struct:
+                if attr[0] == "table_name":
+                    continue
+                values.append(item.__dict__[attr[0]])
+            resp = self.connector.query({
+                query: values
+            })
+            if isinstance(resp, Exception):
+                raise resp
+            # TODO: continue
