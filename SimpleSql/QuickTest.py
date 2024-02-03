@@ -25,3 +25,4 @@ if __name__ == "__main__":
     app = SimpleSql.App(config)
     app.start()
     print(app.select_data_where(p, ["person_Id", "=", "1"], ["stuff", "=", "Person stuff"]))
+    print(app.select_all_from(p))

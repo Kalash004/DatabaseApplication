@@ -139,16 +139,16 @@ class Controller:
             if isinstance(resp, Exception):
                 raise resp
 
-    def select_data_where(self, object, *selectors):
+    def select_data_where(self, data_instance, *selectors):
         # TODO: ADD INPUT CHECK
         # TODO: Possibility of sql injections, try to fix
         """
 
-        :param object: SimpleData, table data instance
+        :param data_instance: SimpleData, table data instance
         :param selectors: [field, operator, value]
         :return:
         """
-        table_name = object.table_name
+        table_name = data_instance.table_name
         for item in selectors:
             if not isinstance(item, type([])):
                 raise Exception(f"Bad input type, need array got {type(item)}")
@@ -171,9 +171,23 @@ class Controller:
             resp = self.connector.query({
                 query: None
             })
-            return resp
-        except:
-            # TODO: Better exception cases
+            return resp[0]
+        except Exception:
+            # TODO: Better exceptions
+            raise
+
+    def select_all_from(self, data_instance):
+        table_name = data_instance.table_name
+        query = self.__query_obj[table_name].select
+        try:
+            resp = self.connector.query(
+                {
+                    query: None
+                }
+            )
+            return resp[0]
+        except Exception:
+            # TODO: Better exceptions
             raise
 
     def update_data(self, new):
