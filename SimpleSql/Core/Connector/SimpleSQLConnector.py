@@ -10,7 +10,6 @@ from SimpleSql.Core.Exceptions.ConnectionException import ConnectionException
 from SimpleSql.Models.Enums.StateEnum import ConnectionState
 
 
-# TODO: Make singleton
 class SimpleSQLConnector:
     _instance = None
 
@@ -31,7 +30,6 @@ class SimpleSQLConnector:
         self.state = ConnectionState.CONNECTED
 
     def query(self, query_args: typing.Dict[str: [str]]) -> [str, ]:
-        # TODO: Check sql syntaxe for possible errors with ? if the args are empty
         global cursor
         try:
             if not self.check_connection():

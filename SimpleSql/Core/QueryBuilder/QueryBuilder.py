@@ -13,7 +13,6 @@ class SimpleQueryBuilder:
         self.changeable_sign = "%s"
 
     def build_sql(self, tables) -> dict[str:Holder]:
-        # TODO: create or alter
         built = dict()
         for table_name, _table in tables.items():
             table_copy = _table.struct.copy()
@@ -54,7 +53,7 @@ class SimpleQueryBuilder:
         return f"INSERT INTO `{table_name}` VALUES ({bindable_string});"
 
     def __build_select(self, table_name):
-        return f"SELECT `{self.changeable_sign}` FROM `{table_name}`;"
+        return f"SELECT * FROM `{table_name}`;"
 
     def __build_update(self, table_name, table_copy):
         middle = ""
@@ -83,7 +82,7 @@ class SimpleQueryBuilder:
         clean_constraints = ""
         try:
             for constraint in constraints:
-                # TODO: Check ! might be bad funcionality
+                # TODO: Possible error, leave for future
                 clean_constraints += f"{constraint.value} "
             else:
                 clean_constraints += ","

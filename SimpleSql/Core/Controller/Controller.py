@@ -20,17 +20,20 @@ class Controller:
         return cls._instance
 
     def __init__(self, db_config: Config = None):
+        # TODO: ADD INPUT CHECK
         self.config = db_config
         self.connector = None
         self.__query_obj = None
 
     def _add_table(self, table):
+        # TODO: ADD INPUT CHECK
         table_name = self._find_tablename(table)
         if not self.__tables.__contains__(table_name):
             self.__tables[table_name] = table
 
     @staticmethod
     def _find_tablename(table):
+        # TODO: ADD INPUT CHECK
         struct = table.struct
         for item in struct:
             if item[0] == "table_name":
@@ -105,6 +108,7 @@ class Controller:
         )
 
     def table_exists(self, table_name):
+        # TODO: ADD INPUT CHECK
         query = (f"SELECT COUNT(*) "
                  f"FROM information_schema.tables "
                  f"WHERE table_name = '{table_name}' ")
@@ -134,4 +138,43 @@ class Controller:
             })
             if isinstance(resp, Exception):
                 raise resp
-            # TODO: continue
+
+    def select_data_where(self, object, *selectors):
+        # TODO: ADD INPUT CHECK
+        # TODO: Possibility of sql injections, try to fix
+        """
+
+        :param object: SimpleData, table data instance
+        :param selectors: [field, operator, value]
+        :return:
+        """
+        table_name = object.table_name
+        for item in selectors:
+            if not isinstance(item, type([])):
+                raise Exception(f"Bad input type, need array got {type(item)}")
+
+        query = self.__query_obj[table_name].select
+        query = query.rstrip(";")
+        query += " WHERE"
+        query_addition = ""
+        for item in selectors:
+            for index, query_part in enumerate(item):
+                if index != 2:
+                    query_addition += f" {query_part} "
+                else:
+                    query_addition += f" '{query_part}' "
+            query_addition += "AND"
+        query_addition = query_addition.rstrip(" AND")
+        query_addition += ";"
+        query += query_addition
+        try:
+            resp = self.connector.query({
+                query: None
+            })
+            return resp
+        except:
+            # TODO: Better exception cases
+            raise
+
+    def update_data(self, new):
+        pass
