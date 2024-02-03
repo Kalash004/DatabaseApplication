@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import typing
 from typing import TYPE_CHECKING
 
 import SimpleSql
@@ -194,8 +195,24 @@ class Controller:
             # TODO: Better exceptions
             raise
 
-    def select_data_join(self):
-        pass
+    def __select_data_join(self, from_table_name, join_params):
+        # Not working
+        query = self.__query_obj[from_table_name].select
+        # SELECT * FROM `Test2`;
+        query = query.rstrip(";")
+        join_query = ""
+        for table_name, join in join_params.items():
+            join_query += f" INNER JOIN `{table_name}` ON {join[0]} = {join[1]}"
+        query += join_query
+        try:
+            resp = self.connector.query(
+                {
+                    query: None
+                }
+            )
+            return resp[0]
+        except Exception:
+            raise
 
     def update_data(self, new: SimpleSql.Base):
         # TODO: ADD INPUT CHECK
@@ -210,12 +227,16 @@ class Controller:
                 pk = new.__dict__[attr[0]]
             values.append(new.__dict__[attr[0]])
         values.append(pk)
-        resp = self.connector.query(
-            {
-                query: values
-            }
-        )
-        return resp
+        try:
+            resp = self.connector.query(
+                {
+                    query: values
+                }
+            )
+            return resp
+        except Exception:
+            raise
+            # TODO: Better exceptions handling
 
     def delete_data(self, to_delete: SimpleSql.Base):
         # TODO: ADD INPUT CHECK
@@ -226,8 +247,25 @@ class Controller:
                 pk = to_delete.__dict__[attr[0]]
                 break
         query = self.__query_obj[table_name].delete
-        resp = self.connector.query(
-            {
-                query: [pk, ]
-            }
-        )
+        try:
+            resp = self.connector.query(
+                {
+                    query: [pk, ]
+                }
+            )
+            return resp
+        except Exception:
+            # TODO: Better exceptions handling
+            raise
+
+    def query(self, query: typing.Dict[str: [str]]):
+        """
+
+        :param query: {query:[bindable_values]}
+        :return:
+        """
+        try:
+            self.connector.query(query)
+        except Exception:
+            raise
+            # TODO: Better exceptions handling

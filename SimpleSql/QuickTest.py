@@ -20,8 +20,12 @@ if __name__ == "__main__":
     config = SimpleSql.Config(username="root", password="Ka32167890", hostname="localhost",
                               port=0,
                               database_name="Testing", character_set="Testing")
-    p = Person(person_Id=2, stuff="New text", ref_to_test2=2)
-    t = Test2(test2_Id=2, stuff="Heeeeee")
+    p = Person(person_Id=2, stuff="New text", ref_to_test2=3)
+    t = Test2(test2_Id=3, stuff="dsa")
     app = SimpleSql.App(config)
     app.start()
-    app.delete_data(p)
+    app.insert_data(t)
+    app.update_data(p)
+    print(app.select_data_join(p.table_name, {
+        t.table_name: [f"{t.table_name}.test2_Id", f"{p.table_name}.ref_to_test2"]
+    }))
