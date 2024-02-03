@@ -22,8 +22,8 @@ class Controller:
     def __init__(self, db_config: Config = None):
         # TODO: ADD INPUT CHECK
         self.config = db_config
-        self.connector = None
-        self.__query_obj = None
+        self.connector: SimpleSql.Connector
+        self.__query_obj: SimpleSql.Holder
 
     def _add_table(self, table):
         # TODO: ADD INPUT CHECK
@@ -194,7 +194,10 @@ class Controller:
             # TODO: Better exceptions
             raise
 
-    def update_data(self, new):
+    def select_data_join(self):
+        pass
+
+    def update_data(self, new: SimpleSql.Base):
         # TODO: ADD INPUT CHECK
         table_name = new.table_name
         query = self.__query_obj[table_name].update
@@ -213,3 +216,18 @@ class Controller:
             }
         )
         return resp
+
+    def delete_data(self, to_delete: SimpleSql.Base):
+        # TODO: ADD INPUT CHECK
+        table_name = to_delete.table_name
+        pk = None
+        for attr in self.__tables[table_name].struct:
+            if SimpleSql.Constraints.PK in attr[1].constraints:
+                pk = to_delete.__dict__[attr[0]]
+                break
+        query = self.__query_obj[table_name].delete
+        resp = self.connector.query(
+            {
+                query: [pk, ]
+            }
+        )

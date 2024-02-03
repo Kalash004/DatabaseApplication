@@ -23,7 +23,7 @@ class SimpleQueryBuilder:
             insert = self.__build_insert(table_name, table_copy)
             select = self.__build_select(table_name)
             update = self.__build_update(table_name, table_copy)
-            delete = self.__build_delete(table_name)
+            delete = self.__build_delete(table_name, table_copy)
             built[table_name] = Holder(table_name, table_builder_DDL=ddl, references=referencing, insert=insert,
                                        select=select, update=update,
                                        delete=delete)
@@ -70,8 +70,12 @@ class SimpleQueryBuilder:
                  f"WHERE `{pk[0]}` = {self.changeable_sign};")
         return query
 
-    def __build_delete(self, table_name):
-        return f"DELETE FROM `{table_name}` WHERE {self.changeable_sign};"
+    def __build_delete(self, table_name, table_copy):
+        pk = None
+        for attribute in table_copy:
+            if SimpleSql.Constraints.PK in attribute[1].constraints:
+                pk = attribute
+        return f"DELETE FROM `{table_name}` WHERE {pk[0]} = {self.changeable_sign};"
 
     def __find_tablename(self, struct):
         for item in struct:

@@ -24,4 +24,4 @@ if __name__ == "__main__":
     t = Test2(test2_Id=2, stuff="Heeeeee")
     app = SimpleSql.App(config)
     app.start()
-    app.update_data(p)
+    app.delete_data(p)
