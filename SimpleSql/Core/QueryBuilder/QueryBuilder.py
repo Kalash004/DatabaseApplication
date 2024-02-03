@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import SimpleSql
 from SimpleSql.Models.Models.SQLHolder import SimpleSQLHolder as Holder
 
 if TYPE_CHECKING:
@@ -57,12 +58,16 @@ class SimpleQueryBuilder:
 
     def __build_update(self, table_name, table_copy):
         middle = ""
+        pk = None
         for attribute in table_copy:
+            if SimpleSql.Constraints.PK in attribute[1].constraints:
+                pk = attribute
             name = attribute[0]
-            middle += f" `{name}`={self.changeable_sign} "
-        query = (f"UPDATE `{table_name}`"
-                 f"SET{middle}"
-                 f"WHERE {self.changeable_sign};")
+            middle += f" `{name}`={self.changeable_sign}, "
+        middle = middle.rstrip(", ")
+        query = (f"UPDATE `{table_name}` "
+                 f"SET{middle} "
+                 f"WHERE `{pk[0]}` = {self.changeable_sign};")
         return query
 
     def __build_delete(self, table_name):

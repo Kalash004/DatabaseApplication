@@ -63,6 +63,7 @@ class Controller:
         return
 
     def database_exists(self) -> bool:
+        # TODO: Separate query building to QueryBuilder
         query = f"SHOW DATABASES"
         response = self.connector.query({
             query: None
@@ -73,6 +74,7 @@ class Controller:
         return False
 
     def __create_database(self):
+        # TODO: Separate query building to QueryBuilder
         query = f"CREATE DATABASE {self.config.database_name}"
         response = self.connector.query(
             {
@@ -100,6 +102,7 @@ class Controller:
                 )
 
     def use_database(self):
+        # TODO: Separate query building to QueryBuilder
         query = f"USE {self.config.database_name}"
         self.connector.query(
             {
@@ -109,6 +112,7 @@ class Controller:
 
     def table_exists(self, table_name):
         # TODO: ADD INPUT CHECK
+        # TODO: Separate query building to QueryBuilder
         query = (f"SELECT COUNT(*) "
                  f"FROM information_schema.tables "
                  f"WHERE table_name = '{table_name}' ")
@@ -139,16 +143,16 @@ class Controller:
             if isinstance(resp, Exception):
                 raise resp
 
-    def select_data_where(self, data_instance, *selectors):
+    def select_data_where(self, table_name, *selectors):
         # TODO: ADD INPUT CHECK
         # TODO: Possibility of sql injections, try to fix
+        # TODO: Separate query building to QueryBuilder
         """
 
-        :param data_instance: SimpleData, table data instance
+        :param table_name: str, table name
         :param selectors: [field, operator, value]
         :return:
         """
-        table_name = data_instance.table_name
         for item in selectors:
             if not isinstance(item, type([])):
                 raise Exception(f"Bad input type, need array got {type(item)}")
@@ -176,8 +180,8 @@ class Controller:
             # TODO: Better exceptions
             raise
 
-    def select_all_from(self, data_instance):
-        table_name = data_instance.table_name
+    def select_all_from(self, table_name):
+        # TODO: ADD INPUT CHECK
         query = self.__query_obj[table_name].select
         try:
             resp = self.connector.query(
@@ -191,4 +195,21 @@ class Controller:
             raise
 
     def update_data(self, new):
-        pass
+        # TODO: ADD INPUT CHECK
+        table_name = new.table_name
+        query = self.__query_obj[table_name].update
+        values = []
+        pk = None
+        for attr in self.__tables[table_name].struct:
+            if attr[0] == "table_name":
+                continue
+            if SimpleSql.Constraints.PK in attr[1].constraints:
+                pk = new.__dict__[attr[0]]
+            values.append(new.__dict__[attr[0]])
+        values.append(pk)
+        resp = self.connector.query(
+            {
+                query: values
+            }
+        )
+        return resp

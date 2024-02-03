@@ -52,6 +52,7 @@ class SimpleSQLConnector:
                 raise err
         except Exception as err:
             self.state = ConnectionState.ERROR
+            self.__connection.rollback()
             raise Exception(f"Error occured while quering the database: {err}") from err
         finally:
             cursor.close()
