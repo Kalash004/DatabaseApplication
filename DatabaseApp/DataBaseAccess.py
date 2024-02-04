@@ -27,3 +27,24 @@ class DataBaseAccess:
 
     def read_all(self, obj):
         return self.orm.select_all_from(obj)
+
+    def select_where(self, obj, arg):
+        resp = self.orm.select_data_where(obj, arg)
+        return resp
+
+    def get_last_index(self, obj):
+        resp = self.orm.last_inserted_instance(obj)
+        return resp
+
+    def insert(self, obj):
+        # TODO: Possible exception
+        resp = self.orm.insert_data(obj)
+        return resp
+
+    def delete(self, obj, id):
+        resp = self.orm.delete_data_id(obj, id)
+        return resp
+
+    def update(self, obj):
+        resp = self.orm.update_data(obj)
+        return resp

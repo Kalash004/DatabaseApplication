@@ -11,12 +11,15 @@ class Display:
 
     def __init__(self):
         self.CHOOSING_STRING = "Please choose using numbers: "
+        self.EMPTY_RESULT = "Empty"
+        self.SHOWING_TABLE = "Showing data in table"
         pass
 
     @staticmethod
     def display_start():
         welcome_string = ("Dear client, welcome to this humble, small application. \n\r"
-                          "It has an ability to work with a database")
+                          "It has an ability to work with a database"
+                          "Made by Anton Kalashnikov")
         print(welcome_string)
 
     def display_and_obtain_choices(self, to_choose_from):
@@ -45,3 +48,24 @@ class Display:
     def display_error(error_msg):
         # TODO: Add red coloring
         print(f"User error happened, please check your inputs: {error_msg}")
+
+    def display_tables(self, to_display, table_name):
+        self.clear()
+        print(f"{self.SHOWING_TABLE}: {table_name}")
+        if len(to_display) < 1:
+            print(self.EMPTY_RESULT + "\n")
+            return
+        for instance in to_display:
+            self.__display_item(instance)
+
+    @staticmethod
+    def __display_item(item):
+        print(f"{item}\r")
+
+    @staticmethod
+    def display_message(msg):
+        print(msg)
+
+    @staticmethod
+    def request(msg):
+        return input(msg)

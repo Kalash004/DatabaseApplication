@@ -50,7 +50,7 @@ class Controller:
             self.__query_obj = self.build_queries()
             # Check if database exists
             if not self.database_exists():
-                print(self.__create_database())
+                self.__create_database()
             self.use_database()
             self.starter_dml()
 
@@ -145,7 +145,7 @@ class Controller:
             if isinstance(resp, Exception):
                 raise resp
 
-    def select_data_where(self, obj: type(SimpleSql.Base), *selectors):
+    def select_data_where(self, obj: type(SimpleSql.Base), selectors: []) -> object:
         # TODO: ADD INPUT CHECK
         # TODO: Possibility of sql injections, try to fix
         # TODO: Separate query building to QueryBuilder
@@ -237,6 +237,21 @@ class Controller:
             raise
             # TODO: Better exceptions handling
 
+    def delete_data_id(self, obj, obj_id):
+        table_name = obj.table_name
+        pk = self.__find_primary_key_name(obj)
+        query = self.__query_obj[table_name].delete
+        try:
+            resp = self.connector.query(
+                {
+                    query: [obj_id, ]
+                }
+            )
+            return resp
+        except Exception:
+            # TODO: Better exceptions handling
+            raise
+
     def delete_data(self, to_delete: SimpleSql.Base):
         # TODO: ADD INPUT CHECK
         table_name = to_delete.table_name
@@ -272,8 +287,10 @@ class Controller:
             {
                 query: None
             }
-        )[0][0]
-        return self.__map_to_obj(instance, resp)
+        )[0]
+        if len(resp) > 0:
+            return self.__map_to_obj(instance, resp[0])
+        return []
 
     def __find_primary_key_name(self, instance: SimpleSql.Base):
         table_name = instance.table_name
