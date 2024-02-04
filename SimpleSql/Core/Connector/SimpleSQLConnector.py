@@ -49,6 +49,7 @@ class SimpleSQLConnector:
             if err.errno == 1826:
                 return err
             else:
+                self.__connection.rollback()
                 raise err
         except Exception as err:
             self.state = ConnectionState.ERROR
