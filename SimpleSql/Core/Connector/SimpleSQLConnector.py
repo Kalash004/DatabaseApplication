@@ -34,7 +34,7 @@ class SimpleSQLConnector:
         try:
             if not self.check_connection():
                 self.connect(self.config)
-            cursor = self.__connection.cursor()
+            cursor = self.__connection.cursor(dictionary=True)
             responses = []
             self.__connection.start_transaction()
             for query, args in query_args.items():

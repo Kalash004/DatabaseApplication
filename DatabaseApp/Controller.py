@@ -1,4 +1,4 @@
-from DatabaseApp import Display, DataBaseAccess, Commands, DatabaseClasses
+from DatabaseApp import DataBaseAccess, Commands, DatabaseClasses
 from SimpleSql import Config
 
 
@@ -29,9 +29,24 @@ class Controller:
             "People": DatabaseClasses.people,
             "People in flats":
         }
-        self.display = Display()
         self.database = DataBaseAccess(self.config)
         self.start()
 
     def start(self):
         Commands.start_to_displayer_command().execute()
+        self.__working_loop()
+
+    def __working_loop(self):
+        pass
+        try:
+            # Display all avaliable tables
+            choice = Commands.display_tables_obtain_choice(self.tables)
+            # Obtain table name
+        except Exception:
+            raise
+
+        # Display all avaliable actions for the table
+        # Obtain desired action
+        # Do the action
+
+    def

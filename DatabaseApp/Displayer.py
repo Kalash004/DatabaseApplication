@@ -1,3 +1,6 @@
+from os import system, name
+
+
 class Display:
     __instance = None
 
@@ -14,3 +17,24 @@ class Display:
         welcome_string = ("Dear client, welcome to this humble, small application. \n\r"
                           "It has an ability to work with a database")
         print(welcome_string)
+
+    def display_tables_obtain_choice(self, tables):
+        # TODO: Finish
+        for i, table in enumerate(tables):
+            print(f'{i}. {table}\r\n')
+        try:
+            choice = input("Please choose using numbers")
+            choice = int(choice)
+            return tables[choice]
+        except Exception:
+            self.clear()
+            raise
+
+    @staticmethod
+    def clear():
+        # for windows
+        if name == 'nt':
+            _ = system('cls')
+        # for mac and linux(here, os.name is 'posix')
+        else:
+            _ = system('clear')

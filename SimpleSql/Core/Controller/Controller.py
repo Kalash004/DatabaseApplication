@@ -68,9 +68,9 @@ class Controller:
         query = f"SHOW DATABASES"
         response = self.connector.query({
             query: None
-        })
-        for schema in response[0]:
-            if self.config.database_name in schema:
+        })[0]
+        for schema in response:
+            if self.config.database_name in schema.values():
                 return True
         return False
 
@@ -122,7 +122,8 @@ class Controller:
                 query: None
             }
         )
-        return respones[0][0][0] >= 1
+        resp = respones[0][0]["COUNT(*)"]
+        return int(resp) >= 1
 
     def starter_dml(self):
         self.create_tables()
@@ -144,13 +145,12 @@ class Controller:
             if isinstance(resp, Exception):
                 raise resp
 
-    def select_data_where(self, table_name, *selectors):
+    def select_data_where(self, obj: type(SimpleSql.Base), *selectors):
         # TODO: ADD INPUT CHECK
         # TODO: Possibility of sql injections, try to fix
         # TODO: Separate query building to QueryBuilder
         """
-
-        :param table_name: str, table name
+        :param obj: Class of the table: SimpleSQL.Base
         :param selectors: [field, operator, value]
         :return:
         """
@@ -158,7 +158,7 @@ class Controller:
             if not isinstance(item, type([])):
                 raise Exception(f"Bad input type, need array got {type(item)}")
 
-        query = self.__query_obj[table_name].select
+        query = self.__query_obj[obj.table_name].select
         query = query.rstrip(";")
         query += " WHERE"
         query_addition = ""
@@ -175,28 +175,29 @@ class Controller:
         try:
             resp = self.connector.query({
                 query: None
-            })
-            return resp[0]
+            })[0]
+            return self.__map_arrays_to_obj_array(obj, resp)
         except Exception:
             # TODO: Better exceptions
             raise
 
-    def select_all_from(self, table_name):
+    def select_all_from(self, obj: type(SimpleSql.Base)):
         # TODO: ADD INPUT CHECK
-        query = self.__query_obj[table_name].select
+        query = self.__query_obj[obj.table_name].select
         try:
             resp = self.connector.query(
                 {
                     query: None
                 }
-            )
-            return resp[0]
+            )[0]
+            return self.__map_arrays_to_obj_array(obj, resp)
         except Exception:
             # TODO: Better exceptions
             raise
 
+    @DeprecationWarning
     def __select_data_join(self, from_table_name, join_params):
-        # Not working
+        # NOT WORKING
         query = self.__query_obj[from_table_name].select
         # SELECT * FROM `Test2`;
         query = query.rstrip(";")
@@ -219,12 +220,10 @@ class Controller:
         table_name = new.table_name
         query = self.__query_obj[table_name].update
         values = []
-        pk = None
+        pk = self.__find_primary_key_value(new)
         for attr in self.__tables[table_name].struct:
             if attr[0] == "table_name":
                 continue
-            if SimpleSql.Constraints.PK in attr[1].constraints:
-                pk = new.__dict__[attr[0]]
             values.append(new.__dict__[attr[0]])
         values.append(pk)
         try:
@@ -241,11 +240,7 @@ class Controller:
     def delete_data(self, to_delete: SimpleSql.Base):
         # TODO: ADD INPUT CHECK
         table_name = to_delete.table_name
-        pk = None
-        for attr in self.__tables[table_name].struct:
-            if SimpleSql.Constraints.PK in attr[1].constraints:
-                pk = to_delete.__dict__[attr[0]]
-                break
+        pk = self.__find_primary_key_value(to_delete)
         query = self.__query_obj[table_name].delete
         try:
             resp = self.connector.query(
@@ -269,3 +264,44 @@ class Controller:
         except Exception:
             raise
             # TODO: Better exceptions handling
+
+    def last_inserted_instance(self, instance):
+        pk = self.__find_primary_key_name(instance)
+        query = f"SELECT * FROM {instance.table_name} ORDER BY {pk} DESC LIMIT 1"
+        resp = self.connector.query(
+            {
+                query: None
+            }
+        )[0][0]
+        return self.__map_to_obj(instance, resp)
+
+    def __find_primary_key_name(self, instance: SimpleSql.Base):
+        table_name = instance.table_name
+        pk = None
+        for attr in self.__tables[table_name].struct:
+            if attr[0] == "table_name":
+                continue
+            if SimpleSql.Constraints.PK in attr[1].constraints:
+                pk = attr[0]
+                break
+        return pk
+
+    def __find_primary_key_value(self, instance: SimpleSql.Base):
+        pk = self.__find_primary_key_name(instance)
+        return instance.__dict__[pk]
+
+    @staticmethod
+    def __map_to_obj(obj, resp):
+        hold = obj
+        hold = type(obj)
+        if hold.__name__ == "type":
+            hold = obj
+        mapped_obj = hold(skip_setup=True)
+        mapped_obj.map(resp)
+        return mapped_obj
+
+    def __map_arrays_to_obj_array(self, obj, resp):
+        returner = []
+        for instance in resp:
+            returner.append(self.__map_to_obj(obj, instance))
+        return returner

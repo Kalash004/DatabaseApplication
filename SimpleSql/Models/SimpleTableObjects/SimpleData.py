@@ -12,7 +12,12 @@ class SimpleBaseData:
         self.__tablename_exists()
         SimpleBaseTable(self)
         # Set values of this ojbect
-        self.__setup(kwargs)
+        try:
+            skip_setup = kwargs["skip_setup"]
+        except KeyError:
+            skip_setup = False
+        if not skip_setup is True:
+            self.__setup(kwargs)
 
     def __setup(self, kwargs):
         child_fields = type(self).__dict__
@@ -44,3 +49,10 @@ class SimpleBaseData:
                 continue
             struct.append(i)
         return len(struct)
+
+    def map(self, data):
+        try:
+            for attr, item in data.items():
+                self.__dict__[attr] = item
+        except Exception as ex:
+            raise Exception(f"Error while mapping data from database to object : {ex}") from ex
