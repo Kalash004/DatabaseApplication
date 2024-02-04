@@ -135,3 +135,16 @@ class import_csv_people(ICommand):
 
     def execute(self):
         self.contrl.import_csv_people(self.obj)
+
+
+class obtain_details_flats(ICommand):
+    def __init__(self, flats, houses, addresses, cities, control):
+        self.flats = flats
+        self.houses = houses
+        self.addresses = addresses
+        self.cities = cities
+        self.control = control
+        super().__init__()
+
+    def execute(self):
+        self.control.obtain_details_flats(self.flats, self.houses, self.addresses, self.cities)

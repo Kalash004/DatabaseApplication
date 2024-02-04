@@ -74,3 +74,10 @@ class update(ICommand):
     def execute(self):
         db = Access(initialize=False)
         return db.update(self.obj)
+
+
+class report(ICommand):
+
+    def execute(self):
+        db = Access(initialize=False)
+        return db.get_report()

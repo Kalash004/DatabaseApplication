@@ -71,6 +71,11 @@ class Controller:
                 {
                     "People": dispC.import_csv_people(dc.people, self)
                 }
+            ),
+            "Obtain detailed data": dispC.display_and_obtain_action_choice(
+                {
+                    "Flats": dispC.obtain_details_flats(dc.flats, dc.houses, dc.adreses, dc.cities, self)
+                }
             )
         }
         self.starting_menu_commands = {
@@ -227,7 +232,13 @@ class Controller:
         data = self.read_csv_people(path)
         self.add_person(people_obj, data)
 
-    def read_csv_people(self, path):
+    @staticmethod
+    def obtain_details_flats(flats, houses, addresses, cities):
+        resp = dbC.report().execute()
+        dispC.display_tables(resp[0], "Report of all Flats with their addresses").execute()
+
+    @staticmethod
+    def read_csv_people(path):
         data = []
         with open(path, "r", newline="") as file:
             csv_reader = csv.reader(file)

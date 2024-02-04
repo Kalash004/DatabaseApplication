@@ -56,10 +56,10 @@ class Display:
             print(self.EMPTY_RESULT + "\n")
             return
         for instance in to_display:
-            self.__display_item(instance)
+            self.display_item(instance)
 
     @staticmethod
-    def __display_item(item):
+    def display_item(item):
         print(f"{item}\r")
 
     @staticmethod

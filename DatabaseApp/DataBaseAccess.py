@@ -48,3 +48,18 @@ class DataBaseAccess:
     def update(self, obj):
         resp = self.orm.update_data(obj)
         return resp
+
+    def get_report(self):
+        query = (
+            f'select f.flat_id as "Flat id", f.flat_number as "flat number", f.floor as "floor", h.house_number as "house number",'
+            f' a.address as "address", c.city_name as "city"'
+            f' from flats as f'
+            f' inner join houses as h on f.f_house_id = h.house_id'
+            f' inner join adreses as a on h.f_adress_id = a.adress_id'
+            f' inner join cities as c on a.f_city_id = c.city_id;')
+        resp = self.orm.query(
+            {
+                query: None
+            }
+        )
+        return resp

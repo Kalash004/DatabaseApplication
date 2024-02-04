@@ -275,7 +275,7 @@ class Controller:
         :return:
         """
         try:
-            self.connector.query(query)
+            return self.connector.query(query)
         except Exception:
             raise
             # TODO: Better exceptions handling
