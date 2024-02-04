@@ -10,6 +10,7 @@ class Display:
         return cls.__instance
 
     def __init__(self):
+        self.CHOOSING_STRING = "Please choose using numbers: "
         pass
 
     @staticmethod
@@ -18,14 +19,15 @@ class Display:
                           "It has an ability to work with a database")
         print(welcome_string)
 
-    def display_tables_obtain_choice(self, tables):
+    def display_and_obtain_choices(self, to_choose_from):
         # TODO: Finish
-        for i, table in enumerate(tables):
-            print(f'{i}. {table}\r\n')
+        for i, choice in enumerate(to_choose_from):
+            print(f'{i}. {choice}\r')
         try:
-            choice = input("Please choose using numbers")
+            choice = input(self.CHOOSING_STRING)
             choice = int(choice)
-            return tables[choice]
+            choice = list(to_choose_from)[choice]
+            return choice
         except Exception:
             self.clear()
             raise
@@ -38,3 +40,8 @@ class Display:
         # for mac and linux(here, os.name is 'posix')
         else:
             _ = system('clear')
+
+    @staticmethod
+    def display_error(error_msg):
+        # TODO: Add red coloring
+        print(f"User error happened, please check your inputs: {error_msg}")

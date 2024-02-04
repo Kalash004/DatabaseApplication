@@ -5,5 +5,5 @@ from SimpleSql.Models.Enums.SimpleConstraintsEnum import SimpleConstraints as Co
 from SimpleSql.Models.Enums.SimpleDataTypesEnum import SimpleTypes as Types
 from SimpleSql.Models.Models.SQLHolder import SimpleSQLHolder as Holder
 from SimpleSql.Models.Models.SimpleReference import SimpleReference as Reference
-from SimpleSql.Models.SimpleTableObjects.SimpleData import SimpleBaseData as Base
+from SimpleSql.Models.SimpleTableObjects.Base import Base as Base
 from SimpleSql.Models.SimpleTableObjects.SimpleParam import SimpleParam as Param

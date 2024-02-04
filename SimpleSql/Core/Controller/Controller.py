@@ -22,9 +22,10 @@ class Controller:
 
     def __init__(self, db_config: Config = None):
         # TODO: ADD INPUT CHECK
-        self.config = db_config
-        self.connector: SimpleSql.Connector
-        self.__query_obj: SimpleSql.Holder
+        if db_config is not None:
+            self.config = db_config
+            self.connector: SimpleSql.Connector
+            self.__query_obj: SimpleSql.Holder
 
     def _add_table(self, table):
         # TODO: ADD INPUT CHECK
@@ -46,7 +47,7 @@ class Controller:
             if self.config is None:
                 raise Exception("Database config was not given")
             self.connector = SimpleSql.Connector(db_config=self.config)
-            self.build_queries()
+            self.__query_obj = self.build_queries()
             # Check if database exists
             if not self.database_exists():
                 print(self.__create_database())
@@ -60,8 +61,7 @@ class Controller:
     def build_queries(self):
         builder = Builder()
         basic_sql_commands = builder.build_sql(self.__tables)
-        self.__query_obj = basic_sql_commands
-        return
+        return basic_sql_commands
 
     def database_exists(self) -> bool:
         # TODO: Separate query building to QueryBuilder

@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from SimpleSql.Models.SimpleTableObjects.SimpleData import SimpleBaseData
+    from SimpleSql.Models.SimpleTableObjects.Base import Base
 
 
 class SimpleReference:
-    def __init__(self, ref_to_table: type[SimpleBaseData], attribute: str):
+    def __init__(self, ref_to_table: type[Base], attribute: str):
         self.table_struct = ref_to_table
         self.table_name: str = ref_to_table.table_name
         self.attribute_name: str = attribute

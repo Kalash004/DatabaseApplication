@@ -1,4 +1,5 @@
-import DatabaseApp.Commands.Commands as Commands
+import DatabaseApp.Commands.Commands_Controller_Database as databaseCommands
+import DatabaseApp.Commands.Commands_Controller_Displayer as displayCommands
 import DatabaseApp.DatabaseClasses
 from DatabaseApp.DataBaseAccess import DataBaseAccess
 from DatabaseApp.Displayer import Display

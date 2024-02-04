@@ -3,7 +3,7 @@ import inspect
 from SimpleSql.Models.SimpleTableObjects.SimpleTable import SimpleBaseTable
 
 
-class SimpleBaseData:
+class Base:
     # TODO: Check if all of the attributes are set after init
     table_name: str = None
 
