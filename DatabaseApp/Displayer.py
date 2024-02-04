@@ -18,17 +18,17 @@ class Display:
     @staticmethod
     def display_start():
         welcome_string = ("Dear client, welcome to this humble, small application. \n\r"
-                          "It has an ability to work with a database"
+                          "It has an ability to work with a database. \n\r"
                           "Made by Anton Kalashnikov")
         print(welcome_string)
 
     def display_and_obtain_choices(self, to_choose_from):
         # TODO: Finish
         for i, choice in enumerate(to_choose_from):
-            print(f'{i}. {choice}\r')
+            print(f'{i + 1}. {choice}\r')
         try:
             choice = input(self.CHOOSING_STRING)
-            choice = int(choice)
+            choice = int(choice) - 1
             choice = list(to_choose_from)[choice]
             return choice
         except Exception:

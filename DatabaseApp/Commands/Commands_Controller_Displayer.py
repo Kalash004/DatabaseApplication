@@ -125,3 +125,13 @@ class update_flat(ICommand):
 
     def execute(self):
         self.contrl.update_flat(self.obj)
+
+
+class import_csv_people(ICommand):
+    def __init__(self, people_obj, contrl):
+        self.obj = people_obj
+        self.contrl = contrl
+        super().__init__()
+
+    def execute(self):
+        self.contrl.import_csv_people(self.obj)

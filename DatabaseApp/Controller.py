@@ -1,6 +1,10 @@
+import csv
+import os.path
+
 from DatabaseApp import DatabaseClasses as dc
 from DatabaseApp import displayCommands as dispC, databaseCommands as dbC
-from SimpleSql import Config, Base
+from DatabaseApp.ConfReader import ConfReader
+from SimpleSql import Base
 
 
 class Controller:
@@ -14,11 +18,9 @@ class Controller:
     def __init__(self):
         # TODO: INPUT CHECK
         # TODO: remove testing config, read from file
-        self.config = Config(username="root", password="Ka32167890", hostname="localhost",
-                             port=0,
-                             database_name="product_testing", character_set="Testing")
+        self.config = ConfReader.get_configuration("./config.conf")
         self.run_loop: bool
-        self.commands = {
+        self.table_commands = {
             # TODO: Add commands from command pattern
             "Cities": dispC.display_and_obtain_action_choice(
                 {
@@ -64,6 +66,17 @@ class Controller:
                 }
             ),
         }
+        self.other_commands = {
+            "Import to table": dispC.display_and_obtain_action_choice(
+                {
+                    "People": dispC.import_csv_people(dc.people, self)
+                }
+            )
+        }
+        self.starting_menu_commands = {
+            "Table commands": dispC.display_and_obtain_action_choice(self.table_commands),
+            "Other": dispC.display_and_obtain_action_choice(self.other_commands)
+        }
         self.start()
 
     def start(self):
@@ -74,16 +87,28 @@ class Controller:
     def __working_loop(self):
         self.run_loop = True
         while self.run_loop:
-            table_choice = self.__obtain_table()
-            action_choice = self.__obtain_action(table_choice=table_choice)
-            action_choice.execute()
+            try:
+                starting_choice, executable = self.__obtain_starting()
+                # TODO: Absolute trash code, remake when have time
+                if starting_choice == "Table commands":
+                    executable.execute().execute().execute()
+                elif starting_choice == "Other":
+                    executable.execute().execute().execute()
+                # feature_choice = self.__obtain_feature()
+                # table_choice = self.__obtain_table()
+                # action_choice = self.__obtain_action(table_choice=table_choice)
+                # action_choice.execute()
+            except Exception as err:
+                dispC.display_message(f"Exception happened: {err}\n\r"
+                                      f"Please retry").execute()
 
     @staticmethod
     def read_all(obj: Base):
         response = dbC.read_all(obj).execute()
         dispC.display_tables(response, obj.table_name).execute()
 
-    def update(self, obj: Base):
+    @staticmethod
+    def update(obj: Base):
         dispC.display_message("Not implemented").execute()
 
     @staticmethod
@@ -164,6 +189,15 @@ class Controller:
         dbC.insert(new_flat).execute()
         return new_flat
 
+    @staticmethod
+    def add_person(person_obj, data):
+        for instance in data:
+            new_person = person_obj(person_id=instance["person_id"], person_name=instance["person_name"],
+                                    person_surename=instance["person_surename"],
+                                    unique_identification=instance["unique_identification"],
+                                    is_male=instance["is_male"])
+            dbC.insert(new_person).execute()
+
     def remove_flat(self, flat_obj):
         self.read_all(flat_obj)
         obj_id = dispC.request("Please enter id of the instance you want to delete: ").execute()
@@ -186,11 +220,34 @@ class Controller:
         flat.flat_size_m2 = size
         dbC.update(flat).execute()
 
+    def import_csv_people(self, people_obj):
+        path = dispC.request("Please enter file path").execute()
+        if not os.path.exists(path):
+            raise Exception("Such file does not exist")
+        data = self.read_csv_people(path)
+        self.add_person(people_obj, data)
+
+    def read_csv_people(self, path):
+        data = []
+        with open(path, "r", newline="") as file:
+            csv_reader = csv.reader(file)
+            next(csv_reader)
+            for row in csv_reader:
+                preson_id, person_name, person_surename, unique_identification, is_male = row
+                data.append({
+                    "person_id": int(preson_id),
+                    "person_name": person_name,
+                    "person_surename": person_surename,
+                    "unique_identification": unique_identification,
+                    "is_male": is_male
+                })
+        return data
+
     def __obtain_table(self):
         table_choice = None
         while table_choice is None:
             try:
-                table_choice = dispC.display_and_obtain_choice(self.commands).execute()
+                table_choice = dispC.display_and_obtain_choice(self.table_commands).execute()
             except Exception as err:
                 table_choice = None
                 dispC.display_user_error(Exception(f"Error happened while enetering table {err}")).execute()
@@ -200,9 +257,30 @@ class Controller:
         action_choice = None
         while action_choice is None:
             try:
-                action_choice = self.commands[table_choice].execute()
+                action_choice = self.table_commands[table_choice].execute()
             except Exception as err:
                 action_choice = None
                 dispC.display_user_error(
                     Exception(f"Error happened while enetering action for table ({table_choice}): {err}")).execute()
         return action_choice
+
+    def __obtain_insides(self, choice):
+        choice = None
+        while choice is None:
+            try:
+                choice = dispC.display_and_obtain_choice(self.other_commands).execute()
+            except Exception as err:
+                choice = None
+                dispC.display_user_error(Exception(f"Error happened while enetering table {err}")).execute()
+        return [choice]
+
+    def __obtain_starting(self):
+        choice = None
+        while choice is None:
+            try:
+                choice = dispC.display_and_obtain_choice(self.starting_menu_commands).execute()
+            except Exception as err:
+                choice = None
+                dispC.display_user_error(Exception(f"Error happened while enetering table {err}")).execute()
+        executable = self.starting_menu_commands[choice]
+        return choice, executable
